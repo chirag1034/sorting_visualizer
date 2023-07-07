@@ -8,13 +8,13 @@ let minRange = 1;
 let maxRange = slider.value;
 let numOfBars = slider.value;
 let heightFactor = 4;
-let speedFactor = 100;
+let speedFactor = 50;
 let unsorted_array = new Array(numOfBars);
 
 slider.addEventListener("input", function () {
   numOfBars = slider.value;
   maxRange = slider.value;
-  //console.log(numOfBars);
+  console.log(numOfBars);
   bars_container.innerHTML = "";
   unsorted_array = createRandomArray();
   renderBars(unsorted_array);
@@ -67,6 +67,8 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+// bubble SORT
+
 async function bubbleSort(array) {
   let bars = document.getElementsByClassName("bar");
   for (let i = 0; i < array.length; i++) {
@@ -74,162 +76,142 @@ async function bubbleSort(array) {
       if (array[j] > array[j + 1]) {
         for (let k = 0; k < bars.length; k++) {
           if (k !== j && k !== j + 1) {
-            bars[k].style.backgroundColor = "aqua";
+            bars[k].style.backgroundColor = "lightgreen";
           }
         }
         let temp = array[j];
         array[j] = array[j + 1];
         array[j + 1] = temp;
-        bars[j].style.height = array[j] * heightFactor + "px";
-        bars[j].style.backgroundColor = "lightgreen";
-        //bars[j].innerText = array[j];
+        bars[j].style.height = array[j] * heightFactor + "px";   // px to covert into CSS 
+        bars[j].style.backgroundColor = "red";
+
         bars[j + 1].style.height = array[j + 1] * heightFactor + "px";
-        bars[j + 1].style.backgroundColor = "lightgreen";
-        //bars[j + 1].innerText = array[j + 1];
-        await sleep(speedFactor);
+        bars[j + 1].style.backgroundColor = "red";
+
+        await sleep(speedFactor);  // DELAY karne ke liye easily visual ho,await keyword is used to pause the execution,
+        // sleep is a custom function, speedFactor is a variable that determines the duration of the sleep or delay
+
+
       }
     }
-    await sleep(speedFactor);
+    await sleep(speedFactor);  
   }
   return array;
 }
 
-async function swap(items, leftIndex, rightIndex, bars) {
-  var temp = items[leftIndex];
-  items[leftIndex] = items[rightIndex];
-  items[rightIndex] = temp;
-  bars[leftIndex].style.height = items[leftIndex] * heightFactor + "px";
-  bars[leftIndex].style.backgroundColor = "lightgreen";
-  //bars[leftIndex].innerText = items[leftIndex];
-  bars[rightIndex].style.height = items[rightIndex] * heightFactor + "px";
-  bars[rightIndex].style.backgroundColor = "lightgreen";
-  //bars[rightIndex].innerText = items[rightIndex];
-  await sleep(speedFactor);
-}
-async function partition(items, left, right) {
+// Selection SORT
+async function selectionSort(array) {
   let bars = document.getElementsByClassName("bar");
-  let pivotIndex = Math.floor((right + left) / 2);
-  var pivot = items[pivotIndex]; //middle element
-  bars[pivotIndex].style.backgroundColor = "red";
+  for (let i = 0; i < array.length - 1; i++) {
+    let min_idx = i;
+    for (let j = i + 1; j < array.length; j++) {
+      if (array[j] < array[min_idx]) {
+        min_idx = j;
+        await sleep(speedFactor);
 
-  for (let i = 0; i < bars.length; i++) {
-    if (i != pivotIndex) {
-      bars[i].style.backgroundColor = "aqua";
+      }
     }
-  }
+    for (let k = 0; k < bars.length; k++) {
+      if (k !== min_idx && k !== i) {
+        bars[k].style.backgroundColor = "lightgreen";
+      }
+    }
+    let temp = array[i];
+    array[i] = array[min_idx];
+    array[min_idx] = temp;
+    await sleep(speedFactor);
+    bars[min_idx].style.height = array[min_idx] * heightFactor + "px";   // px to covert into CSS 
+    bars[min_idx].style.backgroundColor = "red";
 
-  (i = left), //left pointer
-    (j = right); //right pointer
-  while (i <= j) {
-    while (items[i] < pivot) {
-      i++;
-    }
-    while (items[j] > pivot) {
-      j--;
-    }
-    if (i <= j) {
-      await swap(items, i, j, bars); //sawpping two elements
-      i++;
-      j--;
-    }
+    bars[i].style.height = array[i] * heightFactor + "px";
+    bars[i].style.backgroundColor = "red";
+
+    await sleep(speedFactor);  // DELAY karne ke liye easily visual ho,await keyword is used to pause the execution,
+    // sleep is a custom function, speedFactor is a variable that determines the duration of the sleep or delay
+
   }
-  return i;
+  return array;
 }
 
-async function quickSort(items, left, right) {
-  var index;
-  let bars = document.getElementsByClassName("bar");
-  if (items.length > 1) {
-    index = await partition(items, left, right); //index returned from partition
-    if (left < index - 1) {
-      //more elements on the left side of the pivot
-      await quickSort(items, left, index - 1);
-    }
-    if (index < right) {
-      //more elements on the right side of the pivot
-      await quickSort(items, index, right);
-    }
-  }
+//INSERRTION SORT
 
-  for (let i = 0; i < bars.length; i++) {
-    bars[i].style.backgroundColor = "aqua";
-  }
-  return items;
-}
-
-// sort_btn.addEventListener("click", function () {
-//   let sorted_array = quickSort(unsorted_array, 0, numOfBars - 1);
-//   console.log(sorted_array);
-// });
-
-//write insertion sort function
-async function InsertionSort(array) {
+async function insertionSort(array) {
   let bars = document.getElementsByClassName("bar");
   for (let i = 1; i < array.length; i++) {
     let key = array[i];
-    let j = i - 1;
-    while (j >= 0 && array[j] > key) {
-      array[j + 1] = array[j];
-      bars[j + 1].style.height = array[j + 1] * heightFactor + "px";
-      bars[j + 1].style.backgroundColor = "red";
-      //bars[j + 1].innerText = array[j + 1];
-      await sleep(speedFactor);
+    let j;
+    for (j = i - 1; j >= 0; j--) {
+      if (array[j] > key) {
+        array[j + 1] = array[j];
+        bars[j + 1].style.height = array[j + 1] * heightFactor + "px";
+        bars[j + 1].style.backgroundColor = "red";
 
-      for (let k = 0; k < bars.length; k++) {
-        if (k != j + 1) {
-          bars[k].style.backgroundColor = "aqua";
+        await sleep(speedFactor);
+
+        for (let k = 0; k < bars.length; k++) {
+          if (k != j + 1) {
+            bars[k].style.backgroundColor = "lightgreen";
+          }
         }
       }
-      j = j - 1;
+
+      else break;
     }
     array[j + 1] = key;
     bars[j + 1].style.height = array[j + 1] * heightFactor + "px";
-    bars[j + 1].style.backgroundColor = "lightgreen";
+    bars[j + 1].style.backgroundColor = "red";
     //bars[j + 1].innerText = array[j + 1];
     await sleep(speedFactor);
   }
 
   for (let k = 0; k < bars.length; k++) {
-    bars[k].style.backgroundColor = "aqua";
+    bars[k].style.backgroundColor = "lightgreen";
   }
   return array;
 }
 
-//write heap sort function
 
-async function HeapSort(array) {
+//QUICKKSORT CODE
+
+async function partition(items, left, right) {
   let bars = document.getElementsByClassName("bar");
-  for (let i = Math.floor(array.length / 2); i >= 0; i--) {
-    await heapify(array, array.length, i);
+  let pivotIndex = right;
+  var pivot = items[pivotIndex]; //middle element
+  bars[pivotIndex].style.backgroundColor = "red";
+  let place = left - 1;
+
+  for (let i = 0; i < bars.length; i++) {
+    if (i !== pivotIndex) {
+      bars[i].style.backgroundColor = "lightgreen";
+    }
   }
-  for (let i = array.length - 1; i >= 0; i--) {
-    await swap(array, 0, i, bars);
-    await heapify(array, i, 0);
+
+  for (let i = left; i < right; i++) {
+    if (items[i] < pivot) {
+      place++;
+      await swap(items, place, i, bars);
+    }
   }
-  for (let k = 0; k < bars.length; k++) {
-    bars[k].style.backgroundColor = "aqua";
-    await sleep(speedFactor);
-  }
-  return array;
+  place++;
+  await swap(items, place, pivotIndex, bars);
+  return place;
 }
 
-async function heapify(array, n, i) {
-  let bars = document.getElementsByClassName("bar");
-  let largest = i;
-  let left = 2 * i + 1;
-  let right = 2 * i + 2;
-  if (left < n && array[left] > array[largest]) {
-    largest = left;
-  }
-  if (right < n && array[right] > array[largest]) {
-    largest = right;
-  }
-  if (largest != i) {
-    await swap(array, i, largest, bars);
-    await heapify(array, n, largest);
-  }
-}
 
+async function quickSort(items, start, end) {
+  var index;
+  let bars = document.getElementsByClassName("bar");
+  if (start < end) {
+    index = await partition(items, start, end);
+    await quickSort(items, start, index - 1);
+    await quickSort(items, index + 1, end);
+  }
+  for (let i = 0; i < bars.length; i++) {
+    bars[i].style.backgroundColor = "lightgreen";
+  }
+  await sleep(speedFactor);
+  return items;
+}
 async function swap(array, i, j, bars) {
   let temp = array[i];
   array[i] = array[j];
@@ -242,7 +224,7 @@ async function swap(array, i, j, bars) {
 
   for (let k = 0; k < bars.length; k++) {
     if (k != i && k != j) {
-      bars[k].style.backgroundColor = "aqua";
+      bars[k].style.backgroundColor = "lightgreen";
     }
   }
   //bars[i].innerText = array[i];
@@ -250,132 +232,98 @@ async function swap(array, i, j, bars) {
   return array;
 }
 
+
+
 //write mergeSort function
-async function mergeSort(arr) {
+
+async function mergeBoth(array, start, mid, end) {
   let bars = document.getElementsByClassName("bar");
-  if (arr.length < 2) {
-    return arr;
+  let n1 = mid - start + 1;
+  let n2 = end - mid;
+
+  const arr1 = Array(n1);
+  const arr2 = Array(n2);
+
+  for (let i = 0; i < n1; i++) {
+    arr1[i] = array[start + i];
   }
-  const middle = Math.floor(arr.length / 2);
-  const left = arr.slice(0, middle);
-  const right = arr.slice(middle);
-  let actualHalf = await mergeSort(left);
-  await mergeSort(right);
+  for (let i = 0; i < n2; i++) {
+    arr2[i] = array[mid + 1 + i];
+  }
 
-  let i = 0;
-  let j = 0;
-  let k = 0;
-
-  while (i < left.length && j < right.length) {
-    if (left[i] < right[j]) {
-      arr[k] = left[i];
-      i++;
-      // bars[k].style.height = arr[k] * heightFactor + "px";
-      // bars[k].style.backgroundColor = "lightgreen";
-      // bars[k].innerText = arr[k];
-      //await sleep(speedFactor);
-    } else {
-      arr[k] = right[j];
-      j++;
-      // bars[k + middle].style.height = arr[k] * heightFactor + "px";
-      // bars[k + middle].style.backgroundColor = "yellow";
-      // bars[k].innerText = arr[k];
-      //await sleep(speedFactor);
+  let i = 0; let j = 0; let k = start;
+  while (i < n1 && j < n2) {
+    if (arr1[i] < arr2[j]) {
+      array[k] = arr1[i];
+      bars[k].style.height = array[k] * heightFactor + "px";
+      bars[k].style.backgroundColor = "red";
+      k++; i++;
+      
     }
-    //shift to right side
-    //console.log(k);
-    //bars[k].style.height = arr[k] * heightFactor + "px";
-    //bars[k].style.backgroundColor = "lightgreen";
-
-    // bars[k + middle].style.height = arr[k] * heightFactor + "px";
-    // bars[k + middle].style.backgroundColor = "yellow";
-
-    //visualize it for right and left side
-    bars[k].style.height = arr[k] * heightFactor + "px";
-    bars[k].style.backgroundColor = "lightgreen";
-    if (k + arr.length < bars.length) {
-      bars[k + arr.length].style.height = arr[k] * heightFactor + "px";
-      console.log(arr[k] * heightFactor);
-      bars[k + arr.length].style.backgroundColor = "yellow";
+    else {
+      array[k] = arr2[j];
+      bars[k].style.height = array[k] * heightFactor + "px";
+      bars[k].style.backgroundColor = "red";
+      k++; j++;
+      
     }
     await sleep(speedFactor);
-    //bars[k].innerText = arr[k];
-
-    k++;
+  }
+  while (i < n1) {
+    array[k] = arr1[i];
+    bars[k].style.height = array[k] * heightFactor + "px";
+    bars[k].style.backgroundColor = "red";
+    k++; i++;
+   
+  }
+  while (j < n2) {
+    array[k] = arr2[j];
+    bars[k].style.height = array[k] * heightFactor + "px";
+    bars[k].style.backgroundColor = "red";
+    k++; j++;
+    
   }
 
-  while (i < left.length) {
-    arr[k] = left[i];
-    bars[k].style.height = arr[k] * heightFactor + "px";
-    bars[k].style.backgroundColor = "lightgreen";
-    await sleep(speedFactor);
-    i++;
-    k++;
+}
+
+async function mergeSort(arr, start, end) {
+  let bars = document.getElementsByClassName("bar");
+  if (start < end) {
+    let middle = Math.floor((start + end) / 2);
+    await mergeSort(arr, start, middle);
+    await mergeSort(arr, middle + 1, end);
+    await mergeBoth(arr, start, middle, end);
   }
-
-  while (j < right.length) {
-    arr[k] = right[j];
-    bars[k].style.height = arr[k] * heightFactor + "px";
-    bars[k].style.backgroundColor = "lightgreen";
-    await sleep(speedFactor);
-    j++;
-    k++;
-  }
-
-  // for (let i = 0; i < arr.length; i++) {
-  //   bars[i].style.height = arr[i] * heightFactor + "px";
-  //   bars[i].style.backgroundColor = "lightgreen";
-  //   await sleep(speedFactor);
-  // }
-
-  for (let k = 0; k < bars.length; k++) {
-    bars[k].style.backgroundColor = "aqua";
+  for (let i = 0; i < bars.length; i++) {
+    bars[i].style.backgroundColor = "lightgreen";
   }
 
   return arr;
 }
 
-function mergeSortD(arr, start, end) {
-  if (arr.length < 2) {
-    return arr;
-  }
 
-  let middle = Math.floor((start + end) / 2);
-  let left = arr.slice(start, middle);
-  let right = arr.slice(middle, end);
-
-  //mergeSort(left);
-  mergeSort(right);
-}
 
 sort_btn.addEventListener("click", function () {
   switch (algotouse) {
     case "bubble":
       bubbleSort(unsorted_array);
       break;
-    case "merge":
-      if (
-        confirm(
-          "Merge Sort is not visualized properly. Do you want to continue?"
-        )
-      ) {
-        mergeSort(unsorted_array);
-      } else {
-        break;
-      }
-      //console.log(mergeSort(unsorted_array));
+    case "selection":
+      selectionSort(unsorted_array);
       break;
-    case "heap":
-      HeapSort(unsorted_array);
-      break;
-    case "insertion":
-      InsertionSort(unsorted_array);
-      break;
-    case "quick":
-      console.log(unsorted_array.length);
 
+    case "insertion":
+      insertionSort(unsorted_array);
+      break;
+
+    case "merge":
+      mergeSort(unsorted_array, 0, unsorted_array.length - 1);
+      break;
+
+    case "quick":
       quickSort(unsorted_array, 0, unsorted_array.length - 1);
       break;
+
     default:
       bubbleSort(unsorted_array);
       break;
